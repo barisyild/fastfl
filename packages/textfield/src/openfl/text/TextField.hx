@@ -2415,7 +2415,7 @@ class TextField extends InteractiveObject
 		{
 			// __dirty = true;
 		}
-
+		__updateFlag();
 		return __textEngine.antiAliasType = value;
 	}
 
@@ -2431,6 +2431,7 @@ class TextField extends InteractiveObject
 			__dirty = true;
 			__layoutDirty = true;
 			__setRenderDirty();
+			__updateFlag();
 		}
 
 		return __textEngine.autoSize = value;
@@ -2447,6 +2448,7 @@ class TextField extends InteractiveObject
 		{
 			__dirty = true;
 			__setRenderDirty();
+			__updateFlag();
 		}
 
 		return __textEngine.background = value;
@@ -2463,6 +2465,7 @@ class TextField extends InteractiveObject
 		{
 			__dirty = true;
 			__setRenderDirty();
+			__updateFlag();
 		}
 
 		return __textEngine.backgroundColor = value;
@@ -2479,6 +2482,7 @@ class TextField extends InteractiveObject
 		{
 			__dirty = true;
 			__setRenderDirty();
+			__updateFlag();
 		}
 
 		return __textEngine.border = value;
@@ -2495,6 +2499,7 @@ class TextField extends InteractiveObject
 		{
 			__dirty = true;
 			__setRenderDirty();
+			__updateFlag();
 		}
 
 		return __textEngine.borderColor = value;
@@ -2524,6 +2529,7 @@ class TextField extends InteractiveObject
 		__layoutDirty = true;
 		__dirty = true;
 		__setRenderDirty();
+		__updateFlag();
 
 		return value;
 	}
@@ -2543,6 +2549,7 @@ class TextField extends InteractiveObject
 
 			__displayAsPassword = value;
 			__updateText(__text);
+			__updateFlag();
 		}
 
 		return value;
@@ -2562,6 +2569,8 @@ class TextField extends InteractiveObject
 		//
 		// }
 
+		__updateFlag();
+
 		return __textEngine.embedFonts = value;
 	}
 
@@ -2578,6 +2587,8 @@ class TextField extends InteractiveObject
 		// __layoutDirty = true;
 		//
 		// }
+
+		__updateFlag();
 
 		return __textEngine.gridFitType = value;
 	}
@@ -2598,6 +2609,8 @@ class TextField extends InteractiveObject
 			__setRenderDirty();
 
 			__textEngine.height = value;
+
+			__updateFlag();
 		}
 
 		return __textEngine.height * Math.abs(scaleY);
@@ -2619,6 +2632,8 @@ class TextField extends InteractiveObject
 			__dirty = true;
 			__layoutDirty = true;
 			__setRenderDirty();
+
+			__updateFlag();
 		}
 
 		__isHTML = true;
@@ -2658,6 +2673,7 @@ class TextField extends InteractiveObject
 		}
 		#else
 		__updateText(value);
+		__updateFlag();
 		#end
 		__updateScrollV();
 
@@ -2688,6 +2704,7 @@ class TextField extends InteractiveObject
 			__dirty = true;
 			__layoutDirty = true;
 			__setRenderDirty();
+			__updateFlag();
 		}
 
 		return value;
@@ -2755,6 +2772,7 @@ class TextField extends InteractiveObject
 		{
 			__textEngine.restrict = value;
 			__updateText(__text);
+			__updateFlag();
 		}
 
 		return value;
@@ -2778,6 +2796,7 @@ class TextField extends InteractiveObject
 			__setRenderDirty();
 			__textEngine.scrollH = value;
 			dispatchEvent(new Event(Event.SCROLL));
+			__updateFlag();
 		}
 
 		return __textEngine.scrollH;
@@ -2798,6 +2817,7 @@ class TextField extends InteractiveObject
 			__setRenderDirty();
 			__textEngine.scrollV = value;
 			dispatchEvent(new Event(Event.SCROLL));
+			__updateFlag();
 		}
 
 		return __textEngine.scrollV;
@@ -2846,6 +2866,7 @@ class TextField extends InteractiveObject
 		{
 			__dirty = true;
 			__setRenderDirty();
+			__updateFlag();
 		}
 
 		return __textEngine.sharpness = value;
@@ -2868,6 +2889,7 @@ class TextField extends InteractiveObject
 			__dirty = true;
 			__layoutDirty = true;
 			__setRenderDirty();
+			__updateFlag();
 		}
 		else
 		{
@@ -2889,6 +2911,7 @@ class TextField extends InteractiveObject
 
 		__updateText(value);
 		__updateScrollV();
+		__updateFlag();
 
 		return value;
 	}
@@ -2904,6 +2927,7 @@ class TextField extends InteractiveObject
 		{
 			__dirty = true;
 			__setRenderDirty();
+			__updateFlag();
 		}
 
 		for (range in __textEngine.textFormatRanges)
@@ -2953,6 +2977,7 @@ class TextField extends InteractiveObject
 			__dirty = true;
 			__layoutDirty = true;
 			__setRenderDirty();
+			__updateFlag();
 		}
 
 		return __textEngine.type = value;
@@ -2972,6 +2997,7 @@ class TextField extends InteractiveObject
 			__dirty = true;
 			__layoutDirty = true;
 			__setRenderDirty();
+			__updateFlag();
 
 			__textEngine.width = value;
 		}
@@ -2991,6 +3017,7 @@ class TextField extends InteractiveObject
 			__dirty = true;
 			__layoutDirty = true;
 			__setRenderDirty();
+			__updateFlag();
 		}
 
 		return __textEngine.wordWrap = value;
@@ -3004,6 +3031,9 @@ class TextField extends InteractiveObject
 	@:noCompletion private override function set_x(value:Float):Float
 	{
 		if (value != __transform.tx + __offsetX) __setTransformDirty();
+
+		__updateFlag();
+
 		return __transform.tx = value - __offsetX;
 	}
 
@@ -3015,6 +3045,9 @@ class TextField extends InteractiveObject
 	@:noCompletion private override function set_y(value:Float):Float
 	{
 		if (value != __transform.ty + __offsetY) __setTransformDirty();
+
+		__updateFlag();
+
 		return __transform.ty = value - __offsetY;
 	}
 

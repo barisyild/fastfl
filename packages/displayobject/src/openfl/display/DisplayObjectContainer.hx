@@ -144,6 +144,9 @@ class DisplayObjectContainer extends InteractiveObject
 			}
 		}
 
+		__updateFlag();
+		child.__updateFlag();
+
 		return child;
 	}
 
@@ -229,6 +232,9 @@ class DisplayObjectContainer extends InteractiveObject
 			__removedChildren.push(child);
 			child.__setTransformDirty();
 		}
+
+		child.__updateFlag();
+		__updateFlag();
 
 		return child;
 	}

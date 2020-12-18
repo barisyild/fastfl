@@ -1,6 +1,7 @@
 package openfl.display;
 
 #if !flash
+import com.oyunstudyosu.chat.SpeechBalloon;
 import openfl.display._internal.CairoBitmap;
 import openfl.display._internal.CairoDisplayObject;
 import openfl.display._internal.CairoGraphics;
@@ -177,6 +178,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	@:noCompletion private var __worldVisibleChanged:Bool;
 	@:noCompletion private var __worldTransformInvalid:Bool;
 	@:noCompletion private var __worldZ:Int;
+	public static var queue:Array<DisplayObject> = [];
 	#if (js && html5)
 	@:noCompletion private var __canvas:CanvasElement;
 	@:noCompletion private var __context:CanvasRenderingContext2D;
@@ -913,7 +915,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	@:noCompletion private function __renderGL(renderer:OpenGLRenderer):Void
 	{
 		__updateCacheBitmap(renderer, false);
-
 		if (__cacheBitmap != null && !__isCacheBitmapRender)
 		{
 			Context3DBitmap.render(__cacheBitmap, renderer);
@@ -991,6 +992,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 
 	@:noCompletion private function __update(transformOnly:Bool, updateChildren:Bool):Void
 	{
+		__updateFlag(false);
 		var renderParent = __renderParent != null ? __renderParent : parent;
 		if (__isMask && renderParent == null) renderParent = __maskTarget;
 		__renderable = (__visible && __scaleX != 0 && __scaleY != 0 && !__isMask && (renderParent == null || !renderParent.__isMask));
@@ -1116,6 +1118,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 
 	@:noCompletion private function __updateCacheBitmap(renderer:DisplayObjectRenderer, force:Bool):Bool
 	{
+		return false;
 		#if lime
 		if (__isCacheBitmapRender) return false;
 		#if openfl_disable_cacheasbitmap
@@ -1725,7 +1728,20 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		if (value > 1.0) value = 1.0;
 		if (value < 0.0) value = 0.0;
 
-		if (value != __alpha && !cacheAsBitmap) __setRenderDirty();
+		if (value != __alpha && !cacheAsBitmap)
+			__setRenderDirty();
+
+		var renderParent = __renderParent != null ? __renderParent : parent;
+		if(renderParent != null)
+		{
+			__worldAlpha = value * renderParent.__worldAlpha;
+		}else{
+			__worldAlpha = value;
+		}
+
+
+		__updateFlag();
+
 		return __alpha = value;
 	}
 
@@ -1739,6 +1755,25 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		if (value == null) value = NORMAL;
 
 		if (value != __blendMode) __setRenderDirty();
+
+		__updateFlag();
+
+		if (value == NORMAL)
+		{
+			var renderParent = __renderParent != null ? __renderParent : parent;
+			if(renderParent == null)
+			{
+				__worldBlendMode = value;
+			}else{
+				__worldBlendMode = renderParent.__worldBlendMode;
+			}
+
+		}
+		else
+		{
+			__worldBlendMode = value;
+		}
+
 		return __blendMode = value;
 	}
 
@@ -1754,6 +1789,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 			__setRenderDirty();
 		}
 
+		__updateFlag();
+
 		return __cacheAsBitmap = value;
 	}
 
@@ -1765,6 +1802,9 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	@:noCompletion private function set_cacheAsBitmapMatrix(value:Matrix):Matrix
 	{
 		__setRenderDirty();
+
+		__updateFlag();
+
 		return __cacheAsBitmapMatrix = (value != null ? value.clone() : value);
 	}
 
@@ -1782,6 +1822,12 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 
 	@:noCompletion private function set_filters(value:Array<BitmapFilter>):Array<BitmapFilter>
 	{
+		if(__filters == value)
+			return value;
+
+		return value;
+
+
 		if (value != null && value.length > 0)
 		{
 			// TODO: Copy incoming array values
@@ -1796,6 +1842,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 			// __updateFilters = false;
 			__setRenderDirty();
 		}
+
+		__updateFlag();
 
 		return value;
 	}
@@ -1828,6 +1876,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 
 		Rectangle.__pool.release(rect);
 		Matrix.__pool.release(matrix);
+
+		__updateFlag();
 
 		return value;
 	}
@@ -1879,6 +1929,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		{
 			__cacheBitmap.mask = value;
 		}
+
+		__updateFlag();
 
 		return __mask = value;
 	}
@@ -1941,6 +1993,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 			__setTransformDirty();
 		}
 
+		__updateFlag();
+
 		return value;
 	}
 
@@ -1970,6 +2024,19 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		}
 
 		__setRenderDirty();
+
+		__updateFlag();
+
+		if (__scale9Grid == null)
+		{
+			var renderParent = __renderParent != null ? __renderParent : parent;
+			if(renderParent != null)
+				__worldScale9Grid = renderParent.__scale9Grid;
+		}
+		else
+		{
+			__worldScale9Grid = __scale9Grid;
+		}
 
 		return value;
 	}
@@ -2005,6 +2072,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 			}
 		}
 
+		__updateFlag();
+
 		return value;
 	}
 
@@ -2038,6 +2107,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 				__transform.d = d;
 			}
 		}
+
+		__updateFlag();
 
 		return value;
 	}
@@ -2074,6 +2145,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 			__setRenderDirty();
 		}
 
+		__updateFlag();
+
 		return value;
 	}
 
@@ -2086,6 +2159,21 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	{
 		__shader = value;
 		__setRenderDirty();
+
+		__updateFlag();
+
+
+		if (__shader == null)
+		{
+			var renderParent = __renderParent != null ? __renderParent : parent;
+			if(renderParent != null)
+				__worldShader = renderParent.__shader;
+		}
+		else
+		{
+			__worldShader = __shader;
+		}
+
 		return value;
 	}
 
@@ -2106,6 +2194,11 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 			throw new TypeError("Parameter transform must be non-null.");
 		}
 
+		if(get_transform() == value)
+		{
+			return value;
+		}
+
 		if (__objectTransform == null)
 		{
 			__objectTransform = new Transform(this);
@@ -2121,6 +2214,32 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 			__setRenderDirty();
 		}
 
+		var renderParent = __renderParent != null ? __renderParent : parent;
+
+		if (renderParent != null)
+		{
+			if (__objectTransform != null)
+			{
+				__worldColorTransform.__copyFrom(__objectTransform.colorTransform);
+				__worldColorTransform.__combine(renderParent.__worldColorTransform);
+			}
+			else
+			{
+				__worldColorTransform.__copyFrom(renderParent.__worldColorTransform);
+			}
+		}else{
+			if (__objectTransform != null)
+			{
+				__worldColorTransform.__copyFrom(__objectTransform.colorTransform);
+			}
+			else
+			{
+				__worldColorTransform.__identity();
+			}
+		}
+
+		__updateFlag();
+
 		return __objectTransform;
 	}
 
@@ -2132,6 +2251,9 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	@:noCompletion private function set_visible(value:Bool):Bool
 	{
 		if (value != __visible) __setRenderDirty();
+
+		__updateFlag();
+
 		return __visible = value;
 	}
 
@@ -2164,6 +2286,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		Rectangle.__pool.release(rect);
 		Matrix.__pool.release(matrix);
 
+		__updateFlag();
+
 		return value;
 	}
 
@@ -2175,6 +2299,9 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	@:keep @:noCompletion private function set_x(value:Float):Float
 	{
 		if (value != __transform.tx) __setTransformDirty();
+
+		__updateFlag();
+
 		return __transform.tx = value;
 	}
 
@@ -2186,7 +2313,23 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	@:keep @:noCompletion private function set_y(value:Float):Float
 	{
 		if (value != __transform.ty) __setTransformDirty();
+
+		__updateFlag();
+
 		return __transform.ty = value;
+	}
+
+	public function __updateFlag(add:Bool = true):Void
+	{
+		if(add)
+		{
+			if(DisplayObject.queue.indexOf(this) == -1)
+			{
+				DisplayObject.queue.push(this);
+			}
+		}else{
+			DisplayObject.queue.remove(this);
+		}
 	}
 }
 #else

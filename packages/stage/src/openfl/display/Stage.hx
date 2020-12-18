@@ -1,6 +1,8 @@
 package openfl.display;
 
 #if !flash
+import com.oyunstudyosu.chat.SpeechBalloon;
+import flash.display.DisplayObject;
 import haxe.CallStack;
 import haxe.ds.ArraySort;
 import openfl._internal.utils.Log;
@@ -1979,7 +1981,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		Telemetry.__startTiming(TelemetryCommandName.RENDER);
 		#end
 
-		__update(false, true);
+		__updateQueue(false, true);
 
 		#if lime
 		if (__renderer != null)
@@ -3070,7 +3072,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		#end
 	}
 
-	@:noCompletion private override function __update(transformOnly:Bool, updateChildren:Bool):Void
+	/*@:noCompletion private override function __update(transformOnly:Bool, updateChildren:Bool):Void
 	{
 		if (transformOnly)
 		{
@@ -3104,9 +3106,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 					// __dirty = false;
 				}
 			}
-			/*
-				#if dom
-			**/
+
 			else if (!__renderDirty && __wasDirty)
 			{
 				// If we were dirty last time, we need at least one more
@@ -3119,9 +3119,15 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 					__wasDirty = false;
 				}
 			}
-			/*
-				#end
-			**/
+		}
+	}*/
+
+	@:noCompletion private function __updateQueue(transformOnly:Bool, updateChildren:Bool):Void
+	{
+		while(DisplayObject.queue.length != 0)
+		{
+			var displayObject:DisplayObject = DisplayObject.queue[0];
+			displayObject.__update(transformOnly, updateChildren);
 		}
 	}
 
