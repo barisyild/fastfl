@@ -1,7 +1,6 @@
 package openfl.display;
 
 #if !flash
-import com.oyunstudyosu.chat.SpeechBalloon;
 import openfl.display._internal.CairoBitmap;
 import openfl.display._internal.CairoDisplayObject;
 import openfl.display._internal.CairoGraphics;

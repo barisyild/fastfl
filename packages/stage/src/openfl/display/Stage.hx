@@ -1,7 +1,6 @@
 package openfl.display;
 
 #if !flash
-import com.oyunstudyosu.chat.SpeechBalloon;
 import flash.display.DisplayObject;
 import haxe.CallStack;
 import haxe.ds.ArraySort;
