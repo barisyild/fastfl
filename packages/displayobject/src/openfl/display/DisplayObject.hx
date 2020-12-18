@@ -1117,7 +1117,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 
 	@:noCompletion private function __updateCacheBitmap(renderer:DisplayObjectRenderer, force:Bool):Bool
 	{
-		return false;
 		#if lime
 		if (__isCacheBitmapRender) return false;
 		#if openfl_disable_cacheasbitmap
