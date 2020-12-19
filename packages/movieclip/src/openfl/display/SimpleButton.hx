@@ -478,6 +478,7 @@ class SimpleButton extends InteractiveObject
 			{
 				value.__renderParent = this;
 				value.__setRenderDirty();
+				value.__updateFlag();
 			}
 
 			__setRenderDirty();
