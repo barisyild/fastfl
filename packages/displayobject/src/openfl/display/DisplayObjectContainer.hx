@@ -144,7 +144,6 @@ class DisplayObjectContainer extends InteractiveObject
 			}
 		}
 
-		//__updateFlag();
 		child.__updateFlag();
 
 		return child;
@@ -233,7 +232,6 @@ class DisplayObjectContainer extends InteractiveObject
 			child.__setTransformDirty();
 		}
 
-		//__updateFlag();
 		child.__updateFlag();
 
 		return child;
@@ -318,6 +316,7 @@ class DisplayObjectContainer extends InteractiveObject
 			__children[index2] = child1;
 
 			__setRenderDirty();
+			__updateFlag();
 		}
 	}
 
@@ -328,6 +327,7 @@ class DisplayObjectContainer extends InteractiveObject
 		__children[index2] = swap;
 		swap = null;
 		__setRenderDirty();
+		__updateFlag();
 	}
 
 	@:noCompletion private override function __cleanup():Void
