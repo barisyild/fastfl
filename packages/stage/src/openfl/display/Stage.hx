@@ -1,6 +1,7 @@
 package openfl.display;
 
 #if !flash
+import openfl.text.TextField;
 import flash.display.DisplayObject;
 import haxe.CallStack;
 import haxe.ds.ArraySort;
@@ -3123,10 +3124,25 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 
 	@:noCompletion private function __updateQueue(transformOnly:Bool, updateChildren:Bool):Void
 	{
+		var updateFix:Array<DisplayObjectContainer> = [];
 		while(DisplayObject.queue.length != 0)
 		{
 			var displayObject:DisplayObject = DisplayObject.queue[0];
+			if(displayObject.parent != null && cast(displayObject.parent, DisplayObjectContainer).__updateRequired == true && displayObject.parent != this)
+			{
+				var displayObjectContainer:DisplayObjectContainer = cast displayObject.parent;
+				displayObjectContainer.__updateOwn(transformOnly, updateChildren);
+				displayObjectContainer.__updateRequired = false;
+				updateFix.push(displayObjectContainer);
+			}
+
 			displayObject.__update(transformOnly, updateChildren);
+			displayObject.__updateFlag(false);
+		}
+
+		for(i in 0...updateFix.length)
+		{
+			updateFix[i].__updateRequired = true;
 		}
 	}
 

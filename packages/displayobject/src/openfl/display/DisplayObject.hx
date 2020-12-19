@@ -991,7 +991,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 
 	@:noCompletion private function __update(transformOnly:Bool, updateChildren:Bool):Void
 	{
-		__updateFlag(false);
 		var renderParent = __renderParent != null ? __renderParent : parent;
 		if (__isMask && renderParent == null) renderParent = __maskTarget;
 		__renderable = (__visible && __scaleX != 0 && __scaleY != 0 && !__isMask && (renderParent == null || !renderParent.__isMask));
@@ -1715,7 +1714,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		}
 	}
 
-	// Get & Set Methods
+// Get & Set Methods
 	@:keep @:noCompletion private function get_alpha():Float
 	{
 		return __alpha;
@@ -1726,17 +1725,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		if (value > 1.0) value = 1.0;
 		if (value < 0.0) value = 0.0;
 
-		if (value != __alpha && !cacheAsBitmap)
-			__setRenderDirty();
-
-		var renderParent = __renderParent != null ? __renderParent : parent;
-		if(renderParent != null)
-		{
-			__worldAlpha = value * renderParent.__worldAlpha;
-		}else{
-			__worldAlpha = value;
-		}
-
+		if (value != __alpha && !cacheAsBitmap) __setRenderDirty();
 
 		__updateFlag();
 
@@ -1755,22 +1744,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		if (value != __blendMode) __setRenderDirty();
 
 		__updateFlag();
-
-		if (value == NORMAL)
-		{
-			var renderParent = __renderParent != null ? __renderParent : parent;
-			if(renderParent == null)
-			{
-				__worldBlendMode = value;
-			}else{
-				__worldBlendMode = renderParent.__worldBlendMode;
-			}
-
-		}
-		else
-		{
-			__worldBlendMode = value;
-		}
 
 		return __blendMode = value;
 	}
@@ -1820,10 +1793,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 
 	@:noCompletion private function set_filters(value:Array<BitmapFilter>):Array<BitmapFilter>
 	{
-		if(__filters == value)
-			return value;
-
-
 		if (value != null && value.length > 0)
 		{
 			// TODO: Copy incoming array values
@@ -2023,17 +1992,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 
 		__updateFlag();
 
-		if (__scale9Grid == null)
-		{
-			var renderParent = __renderParent != null ? __renderParent : parent;
-			if(renderParent != null)
-				__worldScale9Grid = renderParent.__scale9Grid;
-		}
-		else
-		{
-			__worldScale9Grid = __scale9Grid;
-		}
-
 		return value;
 	}
 
@@ -2155,21 +2113,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	{
 		__shader = value;
 		__setRenderDirty();
-
 		__updateFlag();
-
-
-		if (__shader == null)
-		{
-			var renderParent = __renderParent != null ? __renderParent : parent;
-			if(renderParent != null)
-				__worldShader = renderParent.__shader;
-		}
-		else
-		{
-			__worldShader = __shader;
-		}
-
 		return value;
 	}
 
@@ -2190,11 +2134,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 			throw new TypeError("Parameter transform must be non-null.");
 		}
 
-		if(get_transform() == value)
-		{
-			return value;
-		}
-
 		if (__objectTransform == null)
 		{
 			__objectTransform = new Transform(this);
@@ -2204,34 +2143,10 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		__objectTransform.matrix = value.matrix;
 
 		if (!__objectTransform.colorTransform.__equals(value.colorTransform, true)
-			|| (!cacheAsBitmap && __objectTransform.colorTransform.alphaMultiplier != value.colorTransform.alphaMultiplier))
+		|| (!cacheAsBitmap && __objectTransform.colorTransform.alphaMultiplier != value.colorTransform.alphaMultiplier))
 		{
 			__objectTransform.colorTransform.__copyFrom(value.colorTransform);
 			__setRenderDirty();
-		}
-
-		var renderParent = __renderParent != null ? __renderParent : parent;
-
-		if (renderParent != null)
-		{
-			if (__objectTransform != null)
-			{
-				__worldColorTransform.__copyFrom(__objectTransform.colorTransform);
-				__worldColorTransform.__combine(renderParent.__worldColorTransform);
-			}
-			else
-			{
-				__worldColorTransform.__copyFrom(renderParent.__worldColorTransform);
-			}
-		}else{
-			if (__objectTransform != null)
-			{
-				__worldColorTransform.__copyFrom(__objectTransform.colorTransform);
-			}
-			else
-			{
-				__worldColorTransform.__identity();
-			}
 		}
 
 		__updateFlag();

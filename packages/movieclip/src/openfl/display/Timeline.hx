@@ -109,7 +109,7 @@ class Timeline
 		{
 			var nextFrame = __getNextFrame(deltaTime);
 
-			if (__lastFrameScriptEval == nextFrame  || nextFrame == __currentFrame)
+			if (__lastFrameScriptEval == nextFrame)
 			{
 				return;
 			}

@@ -32,6 +32,7 @@ class DisplayObjectContainer extends InteractiveObject
 	// @:noCompletion @:dox(hide) public var textSnapshot (default, never):openfl.text.TextSnapshot;
 	@:noCompletion private var __removedChildren:Vector<DisplayObject>;
 	@:noCompletion private var __tabChildren:Bool;
+	private var __updateRequired:Bool = true;
 
 	#if openfljs
 	@:noCompletion private static function __init__()
@@ -858,6 +859,11 @@ class DisplayObjectContainer extends InteractiveObject
 				interactiveObject.__tabTest(stack);
 			}
 		}
+	}
+
+	@:noCompletion private function __updateOwn(transformOnly:Bool, updateChildren:Bool):Void
+	{
+		super.__update(transformOnly, updateChildren);
 	}
 
 	@:noCompletion private override function __update(transformOnly:Bool, updateChildren:Bool):Void
