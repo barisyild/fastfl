@@ -1823,8 +1823,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		if(__filters == value)
 			return value;
 
-		return value;
-
 
 		if (value != null && value.length > 0)
 		{
