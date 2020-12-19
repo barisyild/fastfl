@@ -1741,9 +1741,11 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	{
 		if (value == null) value = NORMAL;
 
-		if (value != __blendMode) __setRenderDirty();
-
-		__updateFlag();
+		if (value != __blendMode)
+		{
+			__setRenderDirty();
+			__updateFlag();
+		}
 
 		return __blendMode = value;
 	}
@@ -1758,9 +1760,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		if (value != __cacheAsBitmap)
 		{
 			__setRenderDirty();
+			__updateFlag();
 		}
-
-		__updateFlag();
 
 		return __cacheAsBitmap = value;
 	}
@@ -1773,7 +1774,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	@:noCompletion private function set_cacheAsBitmapMatrix(value:Matrix):Matrix
 	{
 		__setRenderDirty();
-
 		__updateFlag();
 
 		return __cacheAsBitmapMatrix = (value != null ? value.clone() : value);
@@ -2161,9 +2161,12 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 
 	@:noCompletion private function set_visible(value:Bool):Bool
 	{
-		if (value != __visible) __setRenderDirty();
+		if (value != __visible)
+		{
+			__updateFlag();
+			__setRenderDirty();
+		}
 
-		__updateFlag();
 
 		return __visible = value;
 	}
