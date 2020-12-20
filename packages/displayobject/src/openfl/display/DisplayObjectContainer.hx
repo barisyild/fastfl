@@ -376,6 +376,9 @@ class DisplayObjectContainer extends InteractiveObject
 
 	@:noCompletion private override function __enterFrame(deltaTime:Int):Void
 	{
+		if(!visible)
+			return;
+
 		for (child in __children)
 		{
 			child.__enterFrame(deltaTime);
