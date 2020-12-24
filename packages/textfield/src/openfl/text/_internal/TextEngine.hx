@@ -93,7 +93,6 @@ class TextEngine
 	@:noCompletion private var __textFormat:TextFormat;
 	@:noCompletion private var __textLayout:TextLayout;
 	@:noCompletion private var __texture:GLTexture;
-	@:noCompletion private var __measureCache:Map<String, Float> = new Map<String, Float>();
 	// @:noCompletion private var __tileData:Map<Tilesheet, Array<Float>>;
 	// @:noCompletion private var __tileDataLength:Map<Tilesheet, Int>;
 	// @:noCompletion private var __tilesheets:Map<Tilesheet, Bool>;
@@ -736,31 +735,6 @@ class TextEngine
 		if (scrollH > maxScrollH) scrollH = maxScrollH;
 	}
 
-	private function __clearMeasureCache():Void
-	{
-		__measureCache = new Map<String, Float>();
-	}
-
-	private function __measureText(str:String):Float
-	{
-		var width:Float = 0;
-
-		for(i in 0...str.length)
-		{
-			var char:String = str.substring(i, i+1);
-			if(__measureCache.exists(char))
-			{
-				width += __measureCache.get(char);
-			}else{
-				var tempWidth:Float = __context.measureText(char).width;
-				width += tempWidth;
-				__measureCache.set(char, tempWidth);
-			}
-		}
-
-		return width;
-	}
-
 	private function getLayoutGroups():Void
 	{
 		layoutGroups.length = 0;
@@ -829,7 +803,7 @@ class TextEngine
 
 				for (i in startIndex...endIndex)
 				{
-					width = __measureText(text.substring(startIndex, i + 1));
+					width = __context.measureText(text.substring(startIndex, i + 1)).width;
 					// if (i > 0) width += letterSpacing;
 
 					positions.push(width - previousWidth);
@@ -846,13 +820,13 @@ class TextEngine
 					if (i < text.length - 1)
 					{
 						// Advance can be less for certain letter combinations, e.g. 'Yo' vs. 'Do'
-						var nextWidth = __measureText(text.charAt(i + 1));
-						var twoWidths = __measureText(text.substr(i, 2));
+						var nextWidth = __context.measureText(text.charAt(i + 1)).width;
+						var twoWidths = __context.measureText(text.substr(i, 2)).width;
 						advance = twoWidths - nextWidth;
 					}
 					else
 					{
-						advance = __measureText(text.charAt(i));
+						advance = __context.measureText(text.charAt(i)).width;
 					}
 
 					// if (i > 0) advance += letterSpacing;
@@ -910,7 +884,7 @@ class TextEngine
 
 		{
 			#if (js && html5)
-			return __measureText(text);
+			return __context.measureText(text).width;
 			#else
 			if (__textLayout == null)
 			{
@@ -1106,6 +1080,7 @@ class TextEngine
 		}
 
 		#if !js inline #end function placeFormattedText(endIndex:Int):Void
+
 		{
 			if (endIndex <= formatRange.end)
 			{
