@@ -2416,6 +2416,7 @@ class TextField extends InteractiveObject
 			// __dirty = true;
 		}
 		__updateFlag();
+		__textEngine.__clearMeasureCache();
 		return __textEngine.antiAliasType = value;
 	}
 
@@ -2432,6 +2433,7 @@ class TextField extends InteractiveObject
 			__layoutDirty = true;
 			__setRenderDirty();
 			__updateFlag();
+			__textEngine.__clearMeasureCache();
 		}
 
 		return __textEngine.autoSize = value;
@@ -2483,6 +2485,7 @@ class TextField extends InteractiveObject
 			__dirty = true;
 			__setRenderDirty();
 			__updateFlag();
+			__textEngine.__clearMeasureCache();
 		}
 
 		return __textEngine.border = value;
@@ -2530,7 +2533,7 @@ class TextField extends InteractiveObject
 		__dirty = true;
 		__setRenderDirty();
 		__updateFlag();
-
+		__textEngine.__clearMeasureCache();
 		return value;
 	}
 
@@ -2550,6 +2553,7 @@ class TextField extends InteractiveObject
 			__displayAsPassword = value;
 			__updateText(__text);
 			__updateFlag();
+			__textEngine.__clearMeasureCache();
 		}
 
 		return value;
@@ -2570,6 +2574,7 @@ class TextField extends InteractiveObject
 		// }
 
 		__updateFlag();
+		__textEngine.__clearMeasureCache();
 
 		return __textEngine.embedFonts = value;
 	}
@@ -2589,6 +2594,7 @@ class TextField extends InteractiveObject
 		// }
 
 		__updateFlag();
+		__textEngine.__clearMeasureCache();
 
 		return __textEngine.gridFitType = value;
 	}
@@ -2611,6 +2617,7 @@ class TextField extends InteractiveObject
 			__textEngine.height = value;
 
 			__updateFlag();
+			__textEngine.__clearMeasureCache();
 		}
 
 		return __textEngine.height * Math.abs(scaleY);
@@ -2705,6 +2712,7 @@ class TextField extends InteractiveObject
 			__layoutDirty = true;
 			__setRenderDirty();
 			__updateFlag();
+			__textEngine.__clearMeasureCache();
 		}
 
 		return value;
@@ -2749,6 +2757,7 @@ class TextField extends InteractiveObject
 			// __updateScrollV();
 			__updateScrollH();
 			__setRenderDirty();
+			__textEngine.__clearMeasureCache();
 		}
 
 		return __textEngine.multiline = value;
@@ -2773,6 +2782,7 @@ class TextField extends InteractiveObject
 			__textEngine.restrict = value;
 			__updateText(__text);
 			__updateFlag();
+			__textEngine.__clearMeasureCache();
 		}
 
 		return value;
@@ -2797,6 +2807,7 @@ class TextField extends InteractiveObject
 			__textEngine.scrollH = value;
 			dispatchEvent(new Event(Event.SCROLL));
 			__updateFlag();
+			__textEngine.__clearMeasureCache();
 		}
 
 		return __textEngine.scrollH;
@@ -2818,6 +2829,7 @@ class TextField extends InteractiveObject
 			__textEngine.scrollV = value;
 			dispatchEvent(new Event(Event.SCROLL));
 			__updateFlag();
+			__textEngine.__clearMeasureCache();
 		}
 
 		return __textEngine.scrollV;
@@ -2867,6 +2879,7 @@ class TextField extends InteractiveObject
 			__dirty = true;
 			__setRenderDirty();
 			__updateFlag();
+			__textEngine.__clearMeasureCache();
 		}
 
 		return __textEngine.sharpness = value;
@@ -2978,6 +2991,7 @@ class TextField extends InteractiveObject
 			__layoutDirty = true;
 			__setRenderDirty();
 			__updateFlag();
+			__textEngine.__clearMeasureCache();
 		}
 
 		return __textEngine.type = value;
@@ -3018,6 +3032,7 @@ class TextField extends InteractiveObject
 			__layoutDirty = true;
 			__setRenderDirty();
 			__updateFlag();
+			__textEngine.__clearMeasureCache();
 		}
 
 		return __textEngine.wordWrap = value;
