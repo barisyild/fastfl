@@ -205,6 +205,8 @@ class Tile
 	@:noCompletion private var __shader:Shader;
 	@:noCompletion private var __tileset:Tileset;
 	@:noCompletion private var __visible:Bool;
+	@:noCompletion private var __render:Bool = true;
+
 	#if flash
 	@:noCompletion private var __tempMatrix = new Matrix();
 	@:noCompletion private var __tempRectangle = new Rectangle();

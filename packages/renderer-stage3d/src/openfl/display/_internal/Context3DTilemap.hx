@@ -76,7 +76,7 @@ class Context3DTilemap
 
 	private static function buildBufferTileContainer(tilemap:Tilemap, group:TileContainer, renderer:OpenGLRenderer, parentTransform:Matrix,
 													 defaultTileset:Tileset, alphaEnabled:Bool, worldAlpha:Float, colorTransformEnabled:Bool, defaultColorTransform:ColorTransform,
-													 cacheBitmapData:BitmapData, rect:Rectangle, matrix:Matrix):Void
+													 cacheBitmapData:BitmapData, rect:Rectangle, matrix:Matrix, containerX:Float = 0.0, containerY:Float = 0.0):Void
 	{
 		var tileTransform = Matrix.__pool.get();
 		var roundPixels = renderer.__roundPixels;
@@ -85,6 +85,7 @@ class Context3DTilemap
 		var length = group.__length;
 
 		resizeBuffer(tilemap, numTiles + length);
+
 
 		var tile,
 		tileset,
@@ -103,6 +104,20 @@ class Context3DTilemap
 
 		for (tile in tiles)
 		{
+			if(tile.__length == 0)
+			{
+				var actualX = containerX + tile.x;
+				var actualY = containerY + tile.y;
+
+				if(actualX + tile.width < 0 || actualX > tilemap.width || actualY + tile.height < 0 || actualY > tilemap.height)
+				{
+					tile.__render = false;
+					continue;
+				}
+
+				tile.__render = true;
+			}
+
 			tileTransform.setTo(1, 0, 0, 1, -tile.originX, -tile.originY);
 			tileTransform.concat(tile.matrix);
 			tileTransform.concat(parentTransform);
@@ -158,7 +173,7 @@ class Context3DTilemap
 			if (tile.__length > 0)
 			{
 				buildBufferTileContainer(tilemap, cast tile, renderer, tileTransform, tileset, alphaEnabled, alpha, colorTransformEnabled, colorTransform,
-				cacheBitmapData, rect, matrix);
+				cacheBitmapData, rect, matrix, containerX + tile.x, containerY + tile.y);
 			}
 			else
 			{
@@ -433,6 +448,9 @@ class Context3DTilemap
 
 		for (tile in tiles)
 		{
+			if(tile.__render == false)
+				continue;
+
 			tileset = tile.tileset != null ? tile.tileset : defaultTileset;
 
 			alpha = tile.alpha * worldAlpha;
