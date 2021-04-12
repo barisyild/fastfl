@@ -78,6 +78,7 @@ class Context3DTilemap
 													 defaultTileset:Tileset, alphaEnabled:Bool, worldAlpha:Float, colorTransformEnabled:Bool, defaultColorTransform:ColorTransform,
 													 cacheBitmapData:BitmapData, rect:Rectangle, matrix:Matrix, containerX:Float = 0.0, containerY:Float = 0.0):Void
 	{
+
 		var tileTransform = Matrix.__pool.get();
 		var roundPixels = renderer.__roundPixels;
 
@@ -88,13 +89,13 @@ class Context3DTilemap
 
 
 		var tile,
-		tileset,
+		tileset = null,
 		alpha,
 		visible,
 		colorTransform = null,
-		id,
-		tileData,
-		tileRect,
+		id = 0,
+		tileData = null,
+		tileRect = null,
 		bitmapData;
 		var tileWidth, tileHeight, uvX, uvY, uvHeight, uvWidth, vertexOffset;
 		var x, y, x2, y2, x3, y3, x4, y4;
@@ -102,14 +103,39 @@ class Context3DTilemap
 		var alphaPosition = 4;
 		var ctPosition = alphaEnabled ? 5 : 4;
 
+		var actualWidth, actualHeight, actualX, actualY;
+		var tilemapWidth = tilemap.__width,
+		tilemapHeight = tilemap.__height;
+
 		for (tile in tiles)
 		{
+			tileset = tile.tileset != null ? tile.tileset : defaultTileset;
+
 			if(tile.__length == 0)
 			{
-				var actualX = containerX + tile.x;
-				var actualY = containerY + tile.y;
+				if (tileset == null) continue;
 
-				if(actualX + tile.width < 0 || actualX > tilemap.width || actualY + tile.height < 0 || actualY > tilemap.height)
+				id = tile.id;
+
+				if (id == -1)
+				{
+					tileRect = tile.__rect;
+					if (tileRect == null || tileRect.width <= 0 || tileRect.height <= 0) continue;
+
+					actualWidth = tileRect.width;
+					actualHeight = tileRect.height;
+				}else{
+					tileData = tileset.__data[id];
+					if (tileData == null) continue;
+
+					actualWidth = tileData.width;
+					actualHeight = tileData.height;
+				}
+
+				actualX = containerX + tile.x;
+				actualY = containerY + tile.y;
+
+				if(actualX + actualWidth < 0 || actualX > tilemapWidth || actualY + actualHeight < 0 || actualY > tilemapHeight)
 				{
 					tile.__render = false;
 					continue;
@@ -128,7 +154,7 @@ class Context3DTilemap
 				tileTransform.ty = Math.round(tileTransform.ty);
 			}
 
-			tileset = tile.tileset != null ? tile.tileset : defaultTileset;
+
 
 			alpha = tile.alpha * worldAlpha;
 			visible = tile.visible;
@@ -177,39 +203,29 @@ class Context3DTilemap
 			}
 			else
 			{
-				if (tileset == null) continue;
-
-				id = tile.id;
-
 				bitmapData = tileset.__bitmapData;
 				if (bitmapData == null) continue;
 
 				if (id == -1)
 				{
-					tileRect = tile.__rect;
-					if (tileRect == null || tileRect.width <= 0 || tileRect.height <= 0) continue;
-
 					uvX = tileRect.x / bitmapData.width;
 					uvY = tileRect.y / bitmapData.height;
 					uvWidth = tileRect.right / bitmapData.width;
 					uvHeight = tileRect.bottom / bitmapData.height;
+					tileWidth = tileRect.width;
+					tileHeight = tileRect.height;
 				}
 				else
 				{
-					tileData = tileset.__data[id];
-					if (tileData == null) continue;
-
-					rect.setTo(tileData.x, tileData.y, tileData.width, tileData.height);
-					tileRect = rect;
-
 					uvX = tileData.__uvX;
 					uvY = tileData.__uvY;
 					uvWidth = tileData.__uvWidth;
 					uvHeight = tileData.__uvHeight;
+					tileWidth = tileData.width;
+					tileHeight = tileData.height;
 				}
 
-				tileWidth = tileRect.width;
-				tileHeight = tileRect.height;
+
 
 				x = tileTransform.__transformX(0, 0);
 				y = tileTransform.__transformY(0, 0);
