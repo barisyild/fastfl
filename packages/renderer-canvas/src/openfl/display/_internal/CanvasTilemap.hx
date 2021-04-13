@@ -46,7 +46,7 @@ class CanvasTilemap
 			context.imageSmoothingEnabled = false;
 		}
 
-		renderTileContainer(tilemap.__group, renderer, tilemap.__renderTransform, tilemap.__tileset, (renderer.__allowSmoothing && tilemap.smoothing),
+		renderTileContainer(tilemap, tilemap.__group, renderer, tilemap.__renderTransform, tilemap.__tileset, (renderer.__allowSmoothing && tilemap.smoothing),
 			tilemap.tileAlphaEnabled, alpha, tilemap.tileBlendModeEnabled, tilemap.__worldBlendMode, null, null, rect);
 
 		if (!renderer.__allowSmoothing || !tilemap.smoothing)
@@ -62,9 +62,9 @@ class CanvasTilemap
 	}
 
 	@SuppressWarnings("checkstyle:Dynamic")
-	private static function renderTileContainer(group:TileContainer, renderer:CanvasRenderer, parentTransform:Matrix, defaultTileset:Tileset, smooth:Bool,
+	private static function renderTileContainer(tilemap:Tilemap, group:TileContainer, renderer:CanvasRenderer, parentTransform:Matrix, defaultTileset:Tileset, smooth:Bool,
 			alphaEnabled:Bool, worldAlpha:Float, blendModeEnabled:Bool, defaultBlendMode:BlendMode, cacheBitmapData:BitmapData, source:Dynamic,
-			rect:Rectangle):Void
+			rect:Rectangle, containerX:Float = 0.0, containerY:Float = 0.0):Void
 	{
 		#if (js && html5)
 		var context = renderer.context;
@@ -80,44 +80,25 @@ class CanvasTilemap
 			alpha,
 			visible,
 			blendMode = null,
-			id,
+			id = 0,
 			tileData,
-			tileRect,
+			tileRect = null,
 			bitmapData;
+
+		var actualWidth, actualHeight, actualX, actualY;
+		var tilemapWidth = tilemap.__width,
+		tilemapHeight = tilemap.__height;
 
 		for (i in 0...length)
 		{
 			tile = tiles[i];
 
-			tileTransform.setTo(1, 0, 0, 1, -tile.originX, -tile.originY);
-			tileTransform.concat(tile.matrix);
-			tileTransform.concat(parentTransform);
+			tileset = tile.tileset;
 
-			if (roundPixels)
-			{
-				tileTransform.tx = Math.round(tileTransform.tx);
-				tileTransform.ty = Math.round(tileTransform.ty);
-			}
+			if(tileset == null)
+				tileset = defaultTileset;
 
-			tileset = tile.tileset != null ? tile.tileset : defaultTileset;
-
-			alpha = tile.alpha * worldAlpha;
-			visible = tile.visible;
-			if (!visible || alpha <= 0) continue;
-
-			if (!alphaEnabled) alpha = 1;
-
-			if (blendModeEnabled)
-			{
-				blendMode = (tile.__blendMode != null) ? tile.__blendMode : defaultBlendMode;
-			}
-
-			if (tile.__length > 0)
-			{
-				renderTileContainer(cast tile, renderer, tileTransform, tileset, smooth, alphaEnabled, alpha, blendModeEnabled, blendMode, cacheBitmapData,
-					source, rect);
-			}
-			else
+			if(tile.__length == 0)
 			{
 				if (tileset == null) continue;
 
@@ -137,6 +118,46 @@ class CanvasTilemap
 					tileRect = rect;
 				}
 
+				actualWidth = tileRect.width;
+				actualHeight = tileRect.height;
+
+				actualX = containerX + tile.x;
+				actualY = containerY + tile.y;
+
+				if(actualX + actualWidth < 0 || actualX > tilemapWidth || actualY + actualHeight < 0 || actualY > tilemapHeight)
+				{
+					continue;
+				}
+			}
+
+			tileTransform.setTo(1, 0, 0, 1, -tile.originX, -tile.originY);
+			tileTransform.concat(tile.matrix);
+			tileTransform.concat(parentTransform);
+
+			if (roundPixels)
+			{
+				tileTransform.tx = Math.round(tileTransform.tx);
+				tileTransform.ty = Math.round(tileTransform.ty);
+			}
+
+			alpha = tile.alpha * worldAlpha;
+			visible = tile.visible;
+			if (!visible || alpha <= 0) continue;
+
+			if (!alphaEnabled) alpha = 1;
+
+			if (blendModeEnabled)
+			{
+				blendMode = (tile.__blendMode != null) ? tile.__blendMode : defaultBlendMode;
+			}
+
+			if (tile.__length > 0)
+			{
+				renderTileContainer(tilemap, cast tile, renderer, tileTransform, tileset, smooth, alphaEnabled, alpha, blendModeEnabled, blendMode, cacheBitmapData,
+					source, rect, containerX + tile.x, containerY + tile.y);
+			}
+			else
+			{
 				bitmapData = tileset.__bitmapData;
 				if (bitmapData == null) continue;
 
