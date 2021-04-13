@@ -109,27 +109,36 @@ class Context3DTilemap
 
 		for (tile in tiles)
 		{
-			tileset = tile.tileset;
-
-			if(tileset == null)
-				tileset = defaultTileset;
+			tileset = tile.tileset != null ? tile.tileset : defaultTileset;
 
 			if(tile.__length == 0)
 			{
-				if (tileset == null) continue;
+				if (tileset == null)
+				{
+					tile.__render = false;
+					continue;
+				}
 
 				id = tile.id;
 
 				if (id == -1)
 				{
 					tileRect = tile.__rect;
-					if (tileRect == null || tileRect.width <= 0 || tileRect.height <= 0) continue;
+					if (tileRect == null || tileRect.width <= 0 || tileRect.height <= 0)
+					{
+						tile.__render = false;
+						continue;
+					}
 
 					actualWidth = tileRect.width;
 					actualHeight = tileRect.height;
 				}else{
 					tileData = tileset.__data[id];
-					if (tileData == null) continue;
+					if (tileData == null)
+					{
+						tile.__render = false;
+						continue;
+					}
 
 					actualWidth = tileData.width;
 					actualHeight = tileData.height;
@@ -143,8 +152,6 @@ class Context3DTilemap
 					tile.__render = false;
 					continue;
 				}
-
-				tile.__render = true;
 			}
 
 			tileTransform.setTo(1, 0, 0, 1, -tile.originX, -tile.originY);
@@ -163,7 +170,11 @@ class Context3DTilemap
 			visible = tile.visible;
 			tile.__dirty = false;
 
-			if (!visible || alpha <= 0) continue;
+			if (!visible || alpha <= 0)
+			{
+				tile.__render = false;
+				continue;
+			}
 
 			if (colorTransformEnabled)
 			{
@@ -207,7 +218,11 @@ class Context3DTilemap
 			else
 			{
 				bitmapData = tileset.__bitmapData;
-				if (bitmapData == null) continue;
+				if (bitmapData == null)
+				{
+					tile.__render = false;
+					continue;
+				}
 
 				if (id == -1)
 				{
@@ -305,6 +320,7 @@ class Context3DTilemap
 
 				vertexDataPosition += dataPerVertex * 4;
 			}
+			tile.__render = true;
 		}
 
 		group.__dirty = false;
@@ -474,7 +490,6 @@ class Context3DTilemap
 
 			alpha = tile.alpha * worldAlpha;
 			visible = tile.visible;
-			if (!visible || alpha <= 0) continue;
 
 			shader = tile.shader != null ? tile.shader : defaultShader;
 
@@ -489,22 +504,17 @@ class Context3DTilemap
 			}
 			else
 			{
-				if (tileset == null) continue;
-
 				id = tile.id;
 
 				bitmapData = tileset.__bitmapData;
-				if (bitmapData == null) continue;
 
 				if (id == -1)
 				{
 					tileRect = tile.__rect;
-					if (tileRect == null || tileRect.width <= 0 || tileRect.height <= 0) continue;
 				}
 				else
 				{
 					tileData = tileset.__data[id];
-					if (tileData == null) continue;
 				}
 
 				if ((shader != currentShader)
