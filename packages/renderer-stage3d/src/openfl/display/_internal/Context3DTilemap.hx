@@ -65,7 +65,7 @@ class Context3DTilemap
 		if (tilemap.tileColorTransformEnabled) dataPerVertex += 8;
 
 		buildBufferTileContainer(tilemap, tilemap.__group, renderer, parentTransform, tilemap.__tileset, tilemap.tileAlphaEnabled, tilemap.__worldAlpha,
-		tilemap.tileColorTransformEnabled, tilemap.__worldColorTransform, null, rect, matrix, vertexBufferData);
+		tilemap.tileColorTransformEnabled, tilemap.__worldColorTransform, null, rect, matrix, vertexBufferData, tilemap.width, tilemap.height);
 
 		tilemap.__buffer.flushVertexBufferData();
 
@@ -76,7 +76,7 @@ class Context3DTilemap
 
 	private static function buildBufferTileContainer(tilemap:Tilemap, group:TileContainer, renderer:OpenGLRenderer, parentTransform:Matrix,
 													 defaultTileset:Tileset, alphaEnabled:Bool, worldAlpha:Float, colorTransformEnabled:Bool, defaultColorTransform:ColorTransform,
-													 cacheBitmapData:BitmapData, rect:Rectangle, matrix:Matrix, vertexBufferData:Float32Array, containerX:Float = 0.0, containerY:Float = 0.0):Void
+													 cacheBitmapData:BitmapData, rect:Rectangle, matrix:Matrix, vertexBufferData:Float32Array, tilemapWidth:Float, tilemapHeight:Float, containerX:Float = 0.0, containerY:Float = 0.0):Void
 	{
 
 		var tileTransform = Matrix.__pool.get();
@@ -104,8 +104,6 @@ class Context3DTilemap
 		var ctPosition = alphaEnabled ? 5 : 4;
 
 		var actualWidth, actualHeight, actualX, actualY;
-		var tilemapWidth = tilemap.__width,
-		tilemapHeight = tilemap.__height;
 
 		for (tile in tiles)
 		{
@@ -213,7 +211,7 @@ class Context3DTilemap
 			if (tile.__length > 0)
 			{
 				buildBufferTileContainer(tilemap, cast tile, renderer, tileTransform, tileset, alphaEnabled, alpha, colorTransformEnabled, colorTransform,
-				cacheBitmapData, rect, matrix, vertexBufferData, containerX + tile.x, containerY + tile.y);
+				cacheBitmapData, rect, matrix, vertexBufferData, tilemapWidth, tilemapHeight, containerX + tile.x, containerY + tile.y);
 			}
 			else
 			{
