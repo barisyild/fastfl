@@ -48,7 +48,7 @@ class Context3DTilemap
 	//private static var vertexBufferData:Float32Array;
 	private static var vertexDataPosition:Int;
 
-	public static function buildBuffer(tilemap:Tilemap, renderer:OpenGLRenderer):Void
+	public static function buildBuffer(tilemap:Tilemap, renderer:OpenGLRenderer, renderWidth, renderHeight):Void
 	{
 		if (!tilemap.__renderable || tilemap.__group.__tiles.length == 0 || tilemap.__worldAlpha <= 0) return;
 
@@ -65,7 +65,7 @@ class Context3DTilemap
 		if (tilemap.tileColorTransformEnabled) dataPerVertex += 8;
 
 		buildBufferTileContainer(tilemap, tilemap.__group, renderer, parentTransform, tilemap.__tileset, tilemap.tileAlphaEnabled, tilemap.__worldAlpha,
-		tilemap.tileColorTransformEnabled, tilemap.__worldColorTransform, null, rect, matrix, vertexBufferData, tilemap.width, tilemap.height);
+		tilemap.tileColorTransformEnabled, tilemap.__worldColorTransform, null, rect, matrix, vertexBufferData, renderWidth, renderHeight);
 
 		tilemap.__buffer.flushVertexBufferData();
 
@@ -147,6 +147,7 @@ class Context3DTilemap
 
 				if(actualX + actualWidth < 0 || actualX > tilemapWidth || actualY + actualHeight < 0 || actualY > tilemapHeight)
 				{
+					tile.__dirty = false; //to prevent disable rendering.
 					tile.__render = false;
 					continue;
 				}
@@ -424,9 +425,12 @@ class Context3DTilemap
 	{
 		if (!tilemap.__renderable || tilemap.__worldAlpha <= 0) return;
 
+		var renderWidth = tilemap.__width / Math.abs(tilemap.__scaleX);
+		var renderHeight = tilemap.__height / Math.abs(tilemap.__scaleY);
+
 		context = renderer.__context3D;
 
-		buildBuffer(tilemap, renderer);
+		buildBuffer(tilemap, renderer, renderWidth, renderHeight);
 
 		if (numTiles == 0) return;
 
@@ -449,7 +453,7 @@ class Context3DTilemap
 		// renderer.filterManager.pushObject (tilemap);
 
 		var rect = Rectangle.__pool.get();
-		rect.setTo(0, 0, tilemap.__width, tilemap.__height);
+		rect.setTo(0, 0, renderWidth, renderHeight);
 		renderer.__pushMaskRect(rect, tilemap.__renderTransform);
 
 		renderTileContainer(tilemap, renderer, tilemap.__group, cast tilemap.__worldShader, tilemap.__tileset, tilemap.__worldAlpha,
