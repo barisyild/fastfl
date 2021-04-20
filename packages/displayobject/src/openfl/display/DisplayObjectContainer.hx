@@ -231,9 +231,8 @@ class DisplayObjectContainer extends InteractiveObject
 			__children.remove(child);
 			__removedChildren.push(child);
 			child.__setTransformDirty();
+			child.__updateFlag();
 		}
-
-		child.__updateFlag();
 
 		return child;
 	}
