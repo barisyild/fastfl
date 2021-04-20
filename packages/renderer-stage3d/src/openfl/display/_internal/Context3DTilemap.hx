@@ -207,12 +207,12 @@ class Context3DTilemap
 				}
 			}
 
-			if (!alphaEnabled) alpha = 1;
+			if (!alphaEnabled)
+				alpha = 1;
 
 			if (tile.__length > 0)
 			{
-				buildBufferTileContainer(tilemap, cast tile, renderer, tileTransform, tileset, alphaEnabled, alpha, colorTransformEnabled, colorTransform,
-				cacheBitmapData, rect, matrix, vertexBufferData, tilemapWidth, tilemapHeight, containerX + tile.x, containerY + tile.y);
+				buildBufferTileContainer(tilemap, cast tile, renderer, tileTransform, tileset, alphaEnabled, alpha, colorTransformEnabled, colorTransform, cacheBitmapData, rect, matrix, vertexBufferData, tilemapWidth, tilemapHeight, containerX + tile.x, containerY + tile.y);
 			}
 			else
 			{
@@ -524,13 +524,13 @@ class Context3DTilemap
 				|| (currentBlendMode != blendMode))
 				{
 					flush(tilemap, renderer, currentBlendMode);
+					tile.__buffered = true;
 				}
 
 				currentBitmapData = bitmapData;
 				currentShader = shader;
 				currentBlendMode = blendMode;
 				bufferPosition++;
-				tile.__buffered = true;
 			}
 		}
 	}
