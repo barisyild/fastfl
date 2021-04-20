@@ -316,7 +316,8 @@ class DisplayObjectContainer extends InteractiveObject
 			__children[index2] = child1;
 
 			__setRenderDirty();
-			__updateFlag();
+			child1.__updateFlag();
+			child2.__updateFlag();
 		}
 	}
 
