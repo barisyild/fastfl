@@ -145,7 +145,7 @@ class Context3DTilemap
 				actualX = containerX + tile.x;
 				actualY = containerY + tile.y;
 
-				if(actualX + actualWidth < 0 || actualX > tilemapWidth || actualY + actualHeight < 0 || actualY > tilemapHeight)
+				if(tile.__firstRender == true && actualX + actualWidth < 0 || actualX > tilemapWidth || actualY + actualHeight < 0 || actualY > tilemapHeight)
 				{
 					tile.__dirty = false; //to prevent disable rendering.
 					tile.__render = false;
@@ -531,6 +531,8 @@ class Context3DTilemap
 				currentBlendMode = blendMode;
 				bufferPosition++;
 			}
+
+			tile.__firstRender = true;
 		}
 	}
 
