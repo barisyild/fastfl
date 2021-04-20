@@ -206,7 +206,7 @@ class Tile
 	@:noCompletion private var __tileset:Tileset;
 	@:noCompletion private var __visible:Bool;
 	@:noCompletion private var __render:Bool = true;
-	@:noCompletion private var __firstRender:Bool = false;
+	@:noCompletion private var __buffered:Bool = false;
 
 	#if flash
 	@:noCompletion private var __tempMatrix = new Matrix();
